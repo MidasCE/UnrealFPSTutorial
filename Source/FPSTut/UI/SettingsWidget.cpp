@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "SettingsWidget.h"
 
 #include "FrameRate.h"
@@ -35,6 +32,8 @@ void USettingsWidget::NativeConstruct()
 	InitializeResolutionComboBox();
 	InitializeVsync();
 	InitializeFrameRate();
+
+	InitializeQuitButton();	
 
 	const FSelectionElement SelectionElement[] = {
 		{ShadingQualitySelection, &UGameUserSettings::GetShadingQuality, &UGameUserSettings::SetShadingQuality },
@@ -107,6 +106,18 @@ void USettingsWidget::InitializeResolutionComboBox()
 	ResolutionComboBox->OnSelectionChanged.AddDynamic(this, &USettingsWidget::OnResolutionChanged);
 }
 
+void USettingsWidget::InitializeQuitButton()
+{
+	if (!QuitButton)
+	{
+		UE_LOG(LogTemp, Error, TEXT("QuitButton is missing from the WBP!"));
+		return;
+	}
+
+	QuitButton->OnClicked.Clear();
+	QuitButton->OnClicked.AddDynamic(this, &USettingsWidget::OnQuitGameClicked);
+}
+
 void USettingsWidget::InitializeVsync()
 {
 	if (!VSyncCheckBox) 
@@ -167,4 +178,11 @@ void USettingsWidget::OnVSyncChanged(bool InIsChecked)
 {
 	GameUserSettings->SetVSyncEnabled(InIsChecked);
 	GameUserSettings->ApplySettings(false);
+}
+
+void USettingsWidget::OnQuitGameClicked()
+{
+	// This function handles the actual quitting.
+	// GetOwningPlayer() ensures we quit the specific player controller's session
+	UKismetSystemLibrary::QuitGame(this, GetOwningPlayer(), EQuitPreference::Quit, false);
 }

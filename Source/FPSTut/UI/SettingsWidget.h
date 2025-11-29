@@ -1,10 +1,9 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "CommonActivatableWidget.h"
 #include "SelectionBase.h"
+#include "Components/Button.h"
 #include "Components/ComboBoxString.h"
 #include "SettingsWidget.generated.h"
 
@@ -23,12 +22,16 @@ protected:
 	void InitializeResolutionComboBox();
 	void InitializeVsync();
 	void InitializeFrameRate();
+	void InitializeQuitButton();
 
 	UFUNCTION()
 	void OnResolutionChanged(FString InSelectedItem, ESelectInfo::Type InSelectionType);
 
 	UFUNCTION()
 	void OnVSyncChanged(bool InIsChecked);
+	
+	UFUNCTION()
+	void OnQuitGameClicked();
 
 	UPROPERTY()
 	TObjectPtr<UGameUserSettings> GameUserSettings;
@@ -59,4 +62,7 @@ protected:
 
 	UPROPERTY()
 	TArray<FIntPoint> Resolutions;
+	
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
+	TObjectPtr<UButton> QuitButton;
 };
