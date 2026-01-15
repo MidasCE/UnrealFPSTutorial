@@ -51,7 +51,9 @@ void UGeminiService::SendPrompt(const FString& UserPrompt, FGeminiCallback Callb
 void UGeminiService::HandleResponse(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful, FGeminiCallback Callback)
 {
     if (!bWasSuccessful || !Response.IsValid()) return;
-
+    // --- ADD THIS LINE ---
+    UE_LOG(LogTemp, Error, TEXT("RAW GOOGLE RESPONSE: %s"), *Response->GetContentAsString());
+    // ---------------------
     // Helper: Clean the messy Google JSON
     FString CleanJson = ExtractJsonFromGemini(Response->GetContentAsString());
 

@@ -25,5 +25,5 @@ private:
 	void HandleResponse(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful, FGeminiCallback Callback);
 	FString ExtractJsonFromGemini(const FString& RawResponse);
 
-	FString ApiKey = "AIzaSyCbjt2VahsZafgFvko4rMxjhw9R559duSE"; // TODO: Move to Config file later
+	FString ApiKey = "AIzaSyCEvTtBSQt3tCMmW4DsC4v4zchsRSf2L14"; // TODO: Move to Config file later
 };
