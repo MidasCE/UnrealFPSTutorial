@@ -19,7 +19,7 @@ void UGeminiService::SendPrompt(const FString& UserPrompt, FGeminiCallback Callb
     FGeminiContent SystemContext;
     SystemContext.parts.Add({ "You are a Game AI. Output JSON: {\"command\": \"ACTION\"}. Commands: JUMP, WAVE, ATTACK." });
     RequestBody.system_instruction = SystemContext;
-
+ 
     // User Input
     FGeminiContent UserContext;
     UserContext.parts.Add({ UserPrompt });
