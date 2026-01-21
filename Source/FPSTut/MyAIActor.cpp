@@ -32,6 +32,7 @@ void AMyAIActor::SendVoiceCommand(FString Text)
 		// 3. Send
 		Service->SendPrompt(Text, Callback);
 	}
+	//For testing TriggerAnimation("WAVE");
 }
 
 void AMyAIActor::HandleAICommand(const FAIGameCommand& Command)
