@@ -1,12 +1,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "GameFramework/Character.h"
 #include "Core/Data/GeminiData.h"
 #include "MyAIActor.generated.h"
 
 UCLASS()
-class FPSTUT_API AMyAIActor : public AActor
+class FPSTUT_API AMyAIActor : public ACharacter
 {
 	GENERATED_BODY()
 
