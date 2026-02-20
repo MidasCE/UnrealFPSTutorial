@@ -17,6 +17,9 @@ public class FPSTut : ModuleRules
 			"CommonUI",
 			"CommonInput",
 			"UMG",
+			"HTTP",           
+			"Json",           
+			"JsonUtilities"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
