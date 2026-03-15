@@ -23,12 +23,16 @@ protected:
 	void InitializeVsync();
 	void InitializeFrameRate();
 	void InitializeQuitButton();
+	void InitializeRestartGameButton();
 
 	UFUNCTION()
 	void OnResolutionChanged(FString InSelectedItem, ESelectInfo::Type InSelectionType);
 
 	UFUNCTION()
 	void OnVSyncChanged(bool InIsChecked);
+
+	UFUNCTION()
+	void OnRestartGameClicked();
 	
 	UFUNCTION()
 	void OnQuitGameClicked();
@@ -62,6 +66,9 @@ protected:
 
 	UPROPERTY()
 	TArray<FIntPoint> Resolutions;
+	
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
+	TObjectPtr<UButton> RestartGameButton;
 	
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
 	TObjectPtr<UButton> QuitButton;

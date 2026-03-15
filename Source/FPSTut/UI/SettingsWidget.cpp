@@ -4,6 +4,7 @@
 #include "Components/CheckBox.h"
 #include "GameFramework/GameUserSettings.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 namespace
 {
@@ -33,13 +34,14 @@ void USettingsWidget::NativeConstruct()
 	InitializeVsync();
 	InitializeFrameRate();
 
-	InitializeQuitButton();	
+	InitializeQuitButton();
+	InitializeRestartGameButton();
 
 	const FSelectionElement SelectionElement[] = {
 		{ShadingQualitySelection, &UGameUserSettings::GetShadingQuality, &UGameUserSettings::SetShadingQuality },
 		{PostProcessingQualitySelection, &UGameUserSettings::GetPostProcessingQuality, &UGameUserSettings::SetPostProcessingQuality },
 		{VisualEffectsQualitySelection, &UGameUserSettings::GetVisualEffectQuality, &UGameUserSettings::SetVisualEffectQuality },
-		{ShadowQualitySelection, &UGameUserSettings::GetShadingQuality, &UGameUserSettings::SetShadingQuality },
+		{ShadowQualitySelection, &UGameUserSettings::GetShadowQuality, &UGameUserSettings::SetShadowQuality },
 	};
 
 	for (const auto& [Widget, GetFunc, SetFunc] : SelectionElement)
@@ -166,6 +168,17 @@ void USettingsWidget::InitializeFrameRate()
 	});
 }
 
+void USettingsWidget::InitializeRestartGameButton()
+{
+	if (!RestartGameButton)
+	{
+		UE_LOG(LogTemp, Error, TEXT("RestartGameButton is missing from the WBP!"));
+		return;
+	}
+
+	RestartGameButton->OnClicked.Clear();
+	RestartGameButton->OnClicked.AddDynamic(this, &USettingsWidget::OnRestartGameClicked);
+}
 
 void USettingsWidget::OnResolutionChanged(FString InSelectedItem, ESelectInfo::Type InSelectionType)
 {
@@ -178,6 +191,27 @@ void USettingsWidget::OnVSyncChanged(bool InIsChecked)
 {
 	GameUserSettings->SetVSyncEnabled(InIsChecked);
 	GameUserSettings->ApplySettings(false);
+}
+
+void USettingsWidget::OnRestartGameClicked()
+{
+	if (UWorld* World = GetWorld())
+	{
+		// Unpause the game (Crucial! Otherwise the new level might load in a paused state)
+		if (APlayerController* PC = GetOwningPlayer())
+		{
+			PC->SetPause(false);
+            
+			// Reset input mode back to Game Only so the mouse doesn't get stuck
+			FInputModeGameOnly InputMode;
+			PC->SetInputMode(InputMode);
+			PC->bShowMouseCursor = false;
+		}
+
+		// Get the name of the current level and reload it
+		FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(World);
+		UGameplayStatics::OpenLevel(World, FName(*CurrentLevelName));
+	}
 }
 
 void USettingsWidget::OnQuitGameClicked()

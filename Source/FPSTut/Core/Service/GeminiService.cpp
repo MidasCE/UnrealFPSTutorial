@@ -29,16 +29,16 @@ void UGeminiService::SendPrompt(const FString& UserPrompt, FGeminiCallback Callb
     FString JsonString;
     FJsonObjectConverter::UStructToJsonObjectString(RequestBody, JsonString);
 
-    // 2. Create HTTP Request
+    // Create HTTP Request
     FHttpRequestRef Request = FHttpModule::Get().CreateRequest();
     Request->SetURL("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent");
     Request->SetVerb("POST");
     Request->SetHeader("Content-Type", "application/json");
-    Request->SetHeader("x-goog-api-key", ApiKey);
+    Request->SetHeader("x-goog-api-key", "");
     Request->SetContentAsString(JsonString);
 
-    // 3. Bind Lambda (The "Context Keeper")
-    // We capture 'Callback' so we know WHO to reply to when the internet replies.
+    // Bind Lambda (The "Context Keeper")
+    // capture 'Callback' so we know WHO to reply to when the internet replies.
     Request->OnProcessRequestComplete().BindLambda(
         [this, Callback](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
         {
@@ -51,9 +51,9 @@ void UGeminiService::SendPrompt(const FString& UserPrompt, FGeminiCallback Callb
 void UGeminiService::HandleResponse(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful, FGeminiCallback Callback)
 {
     if (!bWasSuccessful || !Response.IsValid()) return;
-    // --- ADD THIS LINE ---
+
     UE_LOG(LogTemp, Error, TEXT("RAW GOOGLE RESPONSE: %s"), *Response->GetContentAsString());
-    // ---------------------
+
     // Helper: Clean the messy Google JSON
     FString CleanJson = ExtractJsonFromGemini(Response->GetContentAsString());
 
@@ -61,7 +61,6 @@ void UGeminiService::HandleResponse(FHttpRequestPtr Request, FHttpResponsePtr Re
     FAIGameCommand FinalCommand;
     if (FJsonObjectConverter::JsonObjectStringToUStruct(CleanJson, &FinalCommand))
     {
-        // Ring the phone!
         Callback.ExecuteIfBound(FinalCommand);
     }
 }

@@ -6,7 +6,6 @@
 #include "FPSTut/Core/Data/GeminiData.h"
 #include "GeminiService.generated.h"
 
-// Define the "Phone Call" type (Callback)
 DECLARE_DYNAMIC_DELEGATE_OneParam(FGeminiCallback, const FAIGameCommand&, Command);
 
 UCLASS()

@@ -22,17 +22,13 @@ void AMyAIActor::BeginPlay()
 
 void AMyAIActor::SendVoiceCommand(FString Text)
 {
-	// 1. Get the Singleton Service
 	if (auto* Service = GetGameInstance()->GetSubsystem<UGeminiService>())
 	{
-		// 2. Prepare the Callback (My Phone Number)
 		FGeminiCallback Callback;
 		Callback.BindDynamic(this, &AMyAIActor::HandleAICommand);
 
-		// 3. Send
 		Service->SendPrompt(Text, Callback);
 	}
-	//For testing TriggerAnimation("WAVE");
 }
 
 void AMyAIActor::HandleAICommand(const FAIGameCommand& Command)
