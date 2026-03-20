@@ -8,6 +8,7 @@
 #include "SettingsWidget.generated.h"
 
 class UCheckBox;
+class UEditableTextBox;
 
 UCLASS()
 class FPSTUT_API USettingsWidget : public UCommonActivatableWidget
@@ -24,6 +25,7 @@ protected:
 	void InitializeFrameRate();
 	void InitializeQuitButton();
 	void InitializeRestartGameButton();
+	void InitializeLLMSettings();
 
 	UFUNCTION()
 	void OnResolutionChanged(FString InSelectedItem, ESelectInfo::Type InSelectionType);
@@ -37,6 +39,12 @@ protected:
 	UFUNCTION()
 	void OnQuitGameClicked();
 
+UFUNCTION()
+    void OnLLMEnableChanged(bool bIsChecked);
+
+    UFUNCTION()
+    void OnAPIKeyChanged(const FText& Text);
+    
 	UPROPERTY()
 	TObjectPtr<UGameUserSettings> GameUserSettings;
 
@@ -72,4 +80,10 @@ protected:
 	
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
 	TObjectPtr<UButton> QuitButton;
+	
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
+    TObjectPtr<UCheckBox> LLMEnableCheckBox;
+    
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
+    TObjectPtr<UEditableTextBox> APIKeyTextBox;
 };

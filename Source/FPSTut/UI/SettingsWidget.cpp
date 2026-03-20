@@ -5,6 +5,8 @@
 #include "GameFramework/GameUserSettings.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/EditableTextBox.h"
+#include "FPSTut/Core/Service/GeminiService.h"
 
 namespace
 {
@@ -36,6 +38,7 @@ void USettingsWidget::NativeConstruct()
 
 	InitializeQuitButton();
 	InitializeRestartGameButton();
+	InitializeLLMSettings();
 
 	const FSelectionElement SelectionElement[] = {
 		{ShadingQualitySelection, &UGameUserSettings::GetShadingQuality, &UGameUserSettings::SetShadingQuality },
@@ -219,4 +222,48 @@ void USettingsWidget::OnQuitGameClicked()
 	// This function handles the actual quitting.
 	// GetOwningPlayer() ensures we quit the specific player controller's session
 	UKismetSystemLibrary::QuitGame(this, GetOwningPlayer(), EQuitPreference::Quit, false);
+}
+
+void USettingsWidget::InitializeLLMSettings()
+{
+    if (!LLMEnableCheckBox || !APIKeyTextBox) return;
+
+    // Grab the current state from the Subsystem to populate the UI when the menu opens
+    if (UGeminiService* GeminiService = GetGameInstance()->GetSubsystem<UGeminiService>())
+    {
+        LLMEnableCheckBox->SetIsChecked(GeminiService->bIsLLMEnabled);
+        APIKeyTextBox->SetText(FText::FromString(GeminiService->GeminiAPIKey));
+        APIKeyTextBox->SetIsEnabled(GeminiService->bIsLLMEnabled);
+    }
+
+    // Bind the listeners
+    LLMEnableCheckBox->OnCheckStateChanged.Clear();
+    LLMEnableCheckBox->OnCheckStateChanged.AddDynamic(this, &USettingsWidget::OnLLMEnableChanged);
+
+    APIKeyTextBox->OnTextChanged.Clear();
+    APIKeyTextBox->OnTextChanged.AddDynamic(this, &USettingsWidget::OnAPIKeyChanged);
+}
+
+void USettingsWidget::OnLLMEnableChanged(bool bIsChecked)
+{
+    // Toggle the textbox visually
+    if (APIKeyTextBox)
+    {
+        APIKeyTextBox->SetIsEnabled(bIsChecked);
+    }
+
+    // Save the state to the Subsystem
+    if (UGeminiService* GeminiService = GetGameInstance()->GetSubsystem<UGeminiService>())
+    {
+        GeminiService->bIsLLMEnabled = bIsChecked;
+    }
+}
+
+void USettingsWidget::OnAPIKeyChanged(const FText& Text)
+{
+    // Save the typed key to the Subsystem
+    if (UGeminiService* GeminiService = GetGameInstance()->GetSubsystem<UGeminiService>())
+    {
+        GeminiService->GeminiAPIKey = Text.ToString();
+    }
 }

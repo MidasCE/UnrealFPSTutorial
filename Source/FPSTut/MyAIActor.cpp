@@ -22,14 +22,22 @@ void AMyAIActor::BeginPlay()
 
 void AMyAIActor::SendVoiceCommand(FString Text)
 {
-	if (auto* Service = GetGameInstance()->GetSubsystem<UGeminiService>())
+	if (UGeminiService* Service = GetGameInstance()->GetSubsystem<UGeminiService>())
 	{
 		FGeminiCallback Callback;
 		Callback.BindDynamic(this, &AMyAIActor::HandleAICommand);
 
+		if (!Service->bIsLLMEnabled)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("LLM is not enable, I will do CROUCH to avoid enemy."));
+			TriggerAnimation("CROUCH");
+			return;
+		}
 		Service->SendPrompt(Text, Callback);
 	}
 }
+
+
 
 void AMyAIActor::HandleAICommand(const FAIGameCommand& Command)
 {

@@ -12,7 +12,13 @@ void UGeminiService::Initialize(FSubsystemCollectionBase& Collection)
 
 void UGeminiService::SendPrompt(const FString& UserPrompt, FGeminiCallback Callback)
 {
-    // 1. Build the Request Data (Using Structs)
+     if (!bIsLLMEnabled || GeminiAPIKey.IsEmpty())
+     {
+         UE_LOG(LogTemp, Warning, TEXT("Gemini Request Aborted: LLM is disabled or API Key is empty."));
+         return;
+     }
+
+    // Build the Request Data (Using Structs)
     FGeminiRequest RequestBody;
     
     // System Rules
@@ -34,7 +40,7 @@ void UGeminiService::SendPrompt(const FString& UserPrompt, FGeminiCallback Callb
     Request->SetURL("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent");
     Request->SetVerb("POST");
     Request->SetHeader("Content-Type", "application/json");
-    Request->SetHeader("x-goog-api-key", "");
+    Request->SetHeader("x-goog-api-key", GeminiAPIKey);
     Request->SetContentAsString(JsonString);
 
     // Bind Lambda (The "Context Keeper")

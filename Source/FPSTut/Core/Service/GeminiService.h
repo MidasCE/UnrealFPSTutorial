@@ -19,6 +19,13 @@ public:
 	// The Main Function: "Send this text, and call 'Callback' when done."
 	UFUNCTION(BlueprintCallable, Category = "AI")
 	void SendPrompt(const FString& UserPrompt, FGeminiCallback Callback);
+	
+	// Exposes the True/False variable to any Blueprint
+    UPROPERTY(BlueprintReadWrite, Category = "Gemini Settings")
+    bool bIsLLMEnabled = false;
+    
+    UPROPERTY(BlueprintReadWrite, Category = "Gemini Settings")
+    FString GeminiAPIKey = "";
 
 private:
 	void HandleResponse(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful, FGeminiCallback Callback);
